@@ -21,26 +21,27 @@
 
 {footer_script}
 {literal}
-function setVideoDimensions(player, i) {
-    let dim = player.currentDimensions();
-    if (dim.height == 150 && dim.width == 300 && i > 0) {   /* default dimensions => retry in 50 milliseconds */
-        setTimeout(setVideoDimensions, 50, player, i - 1);
-    } else {
-        let max_height = {/literal}{$DERIV_MAX_HEIGHT}{literal};
-        let max_width = {/literal}{$DERIV_MAX_WIDTH}{literal};
-        if ( dim.height > max_height || dim.width > max_width ) {
-            if ( dim.height > 0 && dim.width > 0 ) {
-                let scale = Math.min( max_height / dim.height, max_width / dim.width );
-                player.width(Math.floor( scale * dim.width ));
-            };
-        };
-    };
-};
+    function setVideoDimensions() {
+    function adjustPlayerSize() {
+    var screenWidth = window.innerWidth;
+    var newPlayerWidth = screenWidth > 1300 ? screenWidth / 1.5 : screenWidth;
+    player.width(newPlayerWidth);
+    var aspectRatio = 16 / 9;
+    var newPlayerHeight = newPlayerWidth / aspectRatio;
+    player.height(newPlayerHeight);
+    }
 
-const player = videojs("my_video_1");
+    adjustPlayerSize();
 
-player.ready(function(){
-    setVideoDimensions(player, 20);
-});
+    window.addEventListener("resize", adjustPlayerSize);};
+
+    const player = videojs("my_video_1");
+
+    player.ready(function(){
+    player.loop(true);
+    setVideoDimensions();
+    player.play();
+    });
+
 {/literal}
 {/footer_script}
